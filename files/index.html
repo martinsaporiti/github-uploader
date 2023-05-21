@@ -10,13 +10,6 @@
             $(function() {
                 let CLIENT_ID = "ed8d53ef744372a8b9b0"
                 let code = "";
-                // let url = window.location.href;
-                // var access_token = "";
-                // const myArray = url.split("code=")
-                // if (myArray.length > 1) {
-                //     code = myArray[1];
-                //     console.log(code);
-                // }
 
                 var params = new window.URLSearchParams(window.location.search);
                 code = params.get('code');
@@ -41,137 +34,12 @@
                         console.log(error);
                     });
 
-                    // fetch('http://localhost:9000/get_access_token?code=' + code, {
-                    //     method: 'GET',
-                    //     headers: {
-                    //         'Content-Type': 'application/json',
-                    //     },
-                    //     // body: JSON.stringify(data),
-                    // })
-                    // .then(response => response.json())
-                    // .then(data => {
-                    //     console.log('Success:', data);
-                    //     access_token = data.access_token;
-                    //     console.log("access token:", access_token)
-                    //     $('#access_token').html(access_token);
-                    // })
-                    // .catch((error) => {
-                    //     console.error('Error:', error);
-                    //     swal("Error!", error, "error")
-                    // });
-
-                    // $.ajax({
-                    //     url: 'https://github.com/login/oauth/access_token',
-                    //     type: 'POST',
-                    //     contentType: 'application/json',
-                    //     data: JSON.stringify(data),
-                    //     success: function(response) {
-                    //         console.log(response)
-                    //         swal("Good job!", message_response, "success")
-                    //     },
-                    //     error: function(error) {
-                    //         console.log(error)
-                    //         alert('Send Fail');
-                    //     }
-                    // })
-
-                    // $.ajax({
-                    //     url: 'http://localhost:9000/get_access_token?code=' + code,
-                    //     type: 'GET',
-                    //     contentType: 'application/json',
-                    //     data: JSON.stringify(data),
-                    //     success: function(response) {
-                    //         access_token = response.access_token;
-                    //         console.log("access token:", access_token)
-                    //         $('#access_token').html(access_token);
-                    //     },
-                    //     error: function(error) {
-                    //         console.log(error)
-                    //     }
-                    // })
-
                 });
 
-
-                // $('#publishSchemaBtn').click(function(){
-                //     var data = JSON.stringify({
-                //         "message": "txt file",
-                //         "content": "c2NoZW1hIGJvZHk=",
-                //         "author": {
-                //             "name": "martinsaporiti",
-                //             "email": "martinsaporiti@gmail.com"
-                //         }
-                //     });
-
-                //     var b = "Bearer " + access_token; 
-                //     console.log(b)
-                //     $.ajax({
-                //         url: 'https://api.github.com/repos/martinsaporiti/service_A/contents/abc7.txt',
-                //         type: 'PUT',
-                //         dataType: 'jsonp',
-                //         headers: {
-                //             'Authorization': b,
-                //             "Content-Type": "application/json",
-                //         //     'Accept' : '*/*',
-                //         //     'X-GitHub-Api-Version': '2022-11-28',
-                //         //     // 'Content-Type': 'application/json',
-                //         //     'User-Agent': 'PostmanRuntime/7.32.2',
-                //         //     'Connection' : 'keep-alive',
-                //         },
-                //         data: data,
-                //         success: function(response) {
-                //             access_token = JSON.stringify(response);
-                //             console.log("response:", access_token)
-                //         },
-                //         error: function(error) {
-                //             console.log(error)
-                            
-                //         }
-                //     })
-                // });
-
-
-                // $('#publishSchemaBtn').click(function(){
-                //     var b = `Bearer ${access_token}`
-                //     console.log(b)
-                //     var settings = {
-                //         "url": "https://api.github.com/repos/martinsaporiti/service_A/contents/abc5.txt",
-                //         "method": "PUT",
-                //         "timeout": 0,
-                //         "headers": {
-                //             "Content-Type": "application/json",
-                //             "Authorization": `Bearer ${access_token}`,
-                //         },
-                //         "data": JSON.stringify({
-                //             "message": "txt file",
-                //             "content": "c2NoZW1hIGJvZHk=",
-                //             "author": {
-                //                 "name": "martinsaporiti",
-                //                 "email": "martinsaporiti@gmail.com"
-                //             }
-                //         }),
-                //         dataType: 'jsonp',
-                //         redirect: 'follow'
-                //     };
-
-                //     $.ajax(settings).done(function (response) {
-                //         console.log(response);
-                //     });
-
-                // });
-
                 $('#publishSchemaBtn').click(function(){
-                    var myHeaders = new Headers();
-                    var b = "Bearer " + access_token;  
-                    console.log(b)
-                    myHeaders.append("Content-Type", "application/json");
-                    myHeaders.append("Authorization", b);
-
                     let c = $('#schemaContent').val();
-                    console.log(c)
-                    var encodedStringBtoA = btoa(c);
-                    console.log(encodedStringBtoA)
-                    var raw = JSON.stringify({
+                    let encodedStringBtoA = btoa(c);
+                    let raw = JSON.stringify({
                         "message": "txt file",
                         "content": encodedStringBtoA,
                         "author": {
@@ -180,14 +48,18 @@
                         }
                     });
 
+                    let b = "Bearer " + access_token;  
+
                     const config = {
                         headers: { 
                             'Content-Type': 'application/json',
                             'Authorization': b,
                         }
                     }
+                    
                     let f = $('#fileName').val();
                     let url  = 'https://api.github.com/repos/martinsaporiti/service_A/contents/' + f;
+                    
                     axios.put(url, raw, config)
                     .then(function (response) {
                         $('#result').html(JSON.stringify(response.data));
@@ -197,25 +69,6 @@
                     });
 
                 });
-                //     var requestOptions = {
-                //         method: 'PUT',
-                //         headers: myHeaders,
-                //         body: raw,
-                //         redirect: 'follow',
-                //         dataType: 'jsonp'
-                //     };
-
-                //     let f = $('#fileName').val();
-                //     let path = "https://api.github.com/repos/martinsaporiti/service_A/contents/" + f;
-                //     fetch(path, requestOptions)
-                //     .then(response => response.text())
-                //     .then(result => {
-                //         console.log(result)
-                //         $('#result').html(result);
-                //     })
-                //     .catch(error => console.log('error', error));
-
-                // });
 
             });
         </script>
