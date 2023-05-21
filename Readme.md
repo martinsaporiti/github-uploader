@@ -1,4 +1,8 @@
-## How to use:
+## Flow
+
+![image](<./Github%20Authentication%20Flow%402x%20(1).png>)
+
+## How to run this app:
 
 1. Register Application on Github
 2. Create CLIENT_ID and CLIENT_SECRET env variables:
