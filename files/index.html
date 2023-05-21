@@ -5,6 +5,7 @@
         <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous"> -->
         <link rel="stylesheet" href="/static/bootstrap.min.css">
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <script>
             $(function() {
                 let CLIENT_ID = "ed8d53ef744372a8b9b0"
@@ -26,30 +27,38 @@
                 })
 
                 $('#getAccessTokenBtn').click(function(){
-
-                    let data = {
-                        client_id: CLIENT_ID,
-                        code: code,
-                    }
-
-                    fetch('http://localhost:9000/get_access_token?code=' + code, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        // body: JSON.stringify(data),
+                    axios({
+                        method: 'get',
+                        url: 'http://localhost:9000/get_access_token?code=' + code,
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Success:', data);
-                        access_token = data.access_token;
+                    .then(function (response) {
+                        response = response.data;
+                        access_token = response.access_token;
                         console.log("access token:", access_token)
                         $('#access_token').html(access_token);
                     })
-                    .catch((error) => {
-                        console.error('Error:', error);
-                        swal("Error!", error, "error")
+                    .catch(function (error) {
+                        console.log(error);
                     });
+
+                    // fetch('http://localhost:9000/get_access_token?code=' + code, {
+                    //     method: 'GET',
+                    //     headers: {
+                    //         'Content-Type': 'application/json',
+                    //     },
+                    //     // body: JSON.stringify(data),
+                    // })
+                    // .then(response => response.json())
+                    // .then(data => {
+                    //     console.log('Success:', data);
+                    //     access_token = data.access_token;
+                    //     console.log("access token:", access_token)
+                    //     $('#access_token').html(access_token);
+                    // })
+                    // .catch((error) => {
+                    //     console.error('Error:', error);
+                    //     swal("Error!", error, "error")
+                    // });
 
                     // $.ajax({
                     //     url: 'https://github.com/login/oauth/access_token',
@@ -165,31 +174,48 @@
                     var raw = JSON.stringify({
                         "message": "txt file",
                         "content": encodedStringBtoA,
-                        // "author": {
-                        //     "name": "martinsaporiti",
-                        //     "email": "martinsaporiti@gmail.com"
-                        // }
+                        "author": {
+                            "name": "martinsaporiti",
+                            "email": "martinsaporiti@gmail.com"
+                        }
                     });
 
-                    var requestOptions = {
-                        method: 'PUT',
-                        headers: myHeaders,
-                        body: raw,
-                        redirect: 'follow',
-                        dataType: 'jsonp'
-                    };
-
+                    const config = {
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': b,
+                        }
+                    }
                     let f = $('#fileName').val();
-                    let path = "https://api.github.com/repos/martinsaporiti/service_A/contents/" + f;
-                    fetch(path, requestOptions)
-                    .then(response => response.text())
-                    .then(result => {
-                        console.log(result)
-                        $('#result').html(result);
+                    let url  = 'https://api.github.com/repos/martinsaporiti/service_A/contents/' + f;
+                    axios.put(url, raw, config)
+                    .then(function (response) {
+                        $('#result').html(JSON.stringify(response.data));
                     })
-                    .catch(error => console.log('error', error));
+                    .catch(function (error) {
+                        console.log(error);
+                    });
 
                 });
+                //     var requestOptions = {
+                //         method: 'PUT',
+                //         headers: myHeaders,
+                //         body: raw,
+                //         redirect: 'follow',
+                //         dataType: 'jsonp'
+                //     };
+
+                //     let f = $('#fileName').val();
+                //     let path = "https://api.github.com/repos/martinsaporiti/service_A/contents/" + f;
+                //     fetch(path, requestOptions)
+                //     .then(response => response.text())
+                //     .then(result => {
+                //         console.log(result)
+                //         $('#result').html(result);
+                //     })
+                //     .catch(error => console.log('error', error));
+
+                // });
 
             });
         </script>
