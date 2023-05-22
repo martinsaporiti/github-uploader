@@ -110,13 +110,14 @@ func getAccessToken(w http.ResponseWriter, r *http.Request) {
 func RespondJSON(w http.ResponseWriter, resp any, statusCode int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
-	retJSON, err := json.Marshal(resp)
+	resJSON, err := json.Marshal(resp)
 	if err != nil {
 		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
 		message := fmt.Sprintf(`{"error marshaling response": "%s"}`, err.Error())
-		retJSON = []byte(message)
+		resJSON = []byte(message)
 	}
-	_, _ = w.Write(retJSON)
+	_, _ = w.Write(resJSON)
 }
 
 // func upload() {
