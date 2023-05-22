@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"embed"
 	"encoding/json"
 	"fmt"
@@ -11,20 +10,7 @@ import (
 	"os"
 	"path"
 	"text/template"
-
-	"github.com/google/go-github/v52/github"
-	"golang.org/x/oauth2"
 )
-
-// var config = {
-//         method: 'put',
-//         url: 'https://api.github.com/repos/sumit-s03/Test/contents/abc.txt',
-//         headers: {
-//             'Authorization': `Bearer ${token}`,
-//             'Content-Type': 'application/json'
-//         },
-//         data: data
-//     };
 
 var (
 	clientID     string
@@ -59,14 +45,15 @@ func main() {
 	log.Printf("Listening on port %d", 9000)
 	log.Fatal(http.ListenAndServe("0.0.0.0:9000", nil))
 
-	// upload()
 }
 
+// index - render the index.html file
 func index(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles(path.Join("./files/index.html"))
 	t.Execute(w, "")
 }
 
+// getAccessToken - get access token from github, using the code from the frontend.
 func getAccessToken(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
 	postURL := fmt.Sprintf("https://github.com/login/oauth/access_token?client_id=%s&client_secret=%s&code=%s", clientID, clientSecret, code)
@@ -123,34 +110,39 @@ func getAccessToken(w http.ResponseWriter, r *http.Request) {
 func RespondJSON(w http.ResponseWriter, resp any, statusCode int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
-	retJSON, _ := json.Marshal(resp)
+	retJSON, err := json.Marshal(resp)
+	if err != nil {
+		log.Println(err)
+		message := fmt.Sprintf(`{"error marshaling response": "%s"}`, err.Error())
+		retJSON = []byte(message)
+	}
 	_, _ = w.Write(retJSON)
 }
 
-func upload() {
-	TOKEN := ""
-	ctx := context.Background()
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: TOKEN},
-	)
+// func upload() {
+// 	TOKEN := ""
+// 	ctx := context.Background()
+// 	ts := oauth2.StaticTokenSource(
+// 		&oauth2.Token{AccessToken: TOKEN},
+// 	)
 
-	tc := oauth2.NewClient(ctx, ts)
-	client := github.NewClient(tc)
-	contentResp, resp, err := client.Repositories.CreateFile(context.Background(), "martinsaporiti", "service_A", "schemas/abc3.txt", &github.RepositoryContentFileOptions{
-		Message: github.String("my commit message"),
-		Content: []byte("Hello World"),
-		Author: &github.CommitAuthor{
-			Name:  github.String("martinsaporiti"),
-			Email: github.String("martinsaporiti@gmail.com"),
-		},
-	})
+// 	tc := oauth2.NewClient(ctx, ts)
+// 	client := github.NewClient(tc)
+// 	contentResp, resp, err := client.Repositories.CreateFile(context.Background(), "martinsaporiti", "service_A", "schemas/abc3.txt", &github.RepositoryContentFileOptions{
+// 		Message: github.String("my commit message"),
+// 		Content: []byte("Hello World"),
+// 		Author: &github.CommitAuthor{
+// 			Name:  github.String("martinsaporiti"),
+// 			Email: github.String("martinsaporiti@gmail.com"),
+// 		},
+// 	})
 
-	if err != nil {
-		panic(err)
-	}
+// 	if err != nil {
+// 		panic(err)
+// 	}
 
-	defer resp.Body.Close()
+// 	defer resp.Body.Close()
 
-	fmt.Println("response Status:", resp.Status)
-	fmt.Println("Content Response:", contentResp.GetHTMLURL())
-}
+// 	fmt.Println("response Status:", resp.Status)
+// 	fmt.Println("Content Response:", contentResp.GetHTMLURL())
+// }
